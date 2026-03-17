@@ -76,7 +76,7 @@ The app uses a Telegram bot to send alerts. You set this up once. The person usi
 5. Choose a username ending in `bot` (e.g. `mama_sos_alert_bot`)
 6. BotFather will reply with a **Token** — copy it. It looks like:
    ```
-   7412563890:AAFxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   YOUR_BOT_TOKEN_HERE
    ```
 
 ### Step 2 — Create a Telegram Group
@@ -210,4 +210,4 @@ MIT — free to use, modify, and distribute. If you build something useful on to
 
 ---
 
-*Built with Claude Code by [Theo Vasdekis](https://github.com/tvasdek) — because our people deserve to feel safe.*
+*Built with Claude by [Theo Vasdekis](https://github.com/tvasdek) — because our people deserve to feel safe.*
