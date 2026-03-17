@@ -355,6 +355,24 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  .lang-toggle {
+    display: flex; gap: 10px; margin-top: 6px;
+  }
+  .lang-btn {
+    flex: 1; padding: 14px 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; color: #666;
+    font-size: clamp(13px, 3.5vw, 15px);
+    font-weight: 700; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 1px;
+  }
+  .lang-btn.lang-active {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    color: white;
+  }
+
   .docs-box {
     background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
     border-radius: 10px; padding: 14px;
@@ -411,12 +429,9 @@
 <div id="success-screen" class="screen">
   <div style="font-size:72px">✅</div>
   <div class="success-title">ΕΣΤΕΙΛΕΣ ΒΟΗΘΕΙΑ!</div>
-  <p class="success-detail">
-    Η οικογένειά σου ειδοποιήθηκε<br>με την τοποθεσία σου.<br><br>
-    <strong>Μείνε ήρεμη — βοήθεια έρχεται!</strong>
-  </p>
+  <p class="success-detail" id="success-detail">Η οικογένειά σου ειδοποιήθηκε<br>με την τοποθεσία σου.<br><br><strong>Μείνε ήρεμη — βοήθεια έρχεται!</strong></p>
   <a class="btn-primary btn-green" id="btn-call-success" href="tel:112">📞 ΚΑΛΕΣΕ ΤΩΡΑ</a>
-  <button class="btn-ghost" onclick="resetApp()">↩ ΕΠΙΣΤΡΟΦΗ</button>
+  <button class="btn-ghost" id="btn-back-success" onclick="resetApp()">↩ ΕΠΙΣΤΡΟΦΗ</button>
 </div>
 
 <!-- ══ ERROR SCREEN ══ -->
@@ -424,9 +439,9 @@
   <div style="font-size:64px">⚠️</div>
   <div class="error-title">ΔΕΝ ΕΣΤΕΙΛΕ!</div>
   <p class="error-detail">Πρόβλημα σύνδεσης.<br>Δοκίμασε ξανά ή κάλεσε απευθείας.</p>
-  <button class="btn-primary btn-red" onclick="retryEmergency()">🔄 ΞΑΝΑΔΟΚΙΜΑΣΕ</button>
+  <button class="btn-primary btn-red" id="btn-retry" onclick="retryEmergency()">🔄 ΞΑΝΑΔΟΚΙΜΑΣΕ</button>
   <a class="btn-primary btn-grey" id="btn-call-error" href="tel:112" style="margin-top:-8px">📞 ΚΑΛΕΣΕ ΑΠΕΥΘΕΙΑΣ</a>
-  <button class="btn-ghost" onclick="resetApp()">↩ ΠΙΣΩ</button>
+  <button class="btn-ghost" id="btn-back-error" onclick="resetApp()">↩ ΠΙΣΩ</button>
 </div>
 
 <!-- ══ SETUP SCREEN ══ -->
@@ -437,69 +452,76 @@
   </div>
   <div class="setup-body">
 
+    <!-- LANGUAGE TOGGLE -->
+    <div>
+      <div class="setup-section-title" id="st-lang">ΓΛΩΣΣΑ / LANGUAGE</div>
+      <div class="lang-toggle">
+        <button class="lang-btn lang-active" id="lang-el" onclick="setLang('el')">🇬🇷 Ελληνικά</button>
+        <button class="lang-btn" id="lang-en" onclick="setLang('en')">🇬🇧 English</button>
+      </div>
+    </div>
+
     <!-- STEP 1: BOT TOKEN -->
     <div>
-      <div class="setup-section-title">ΒΗΜΑ 1 — TELEGRAM BOT TOKEN</div>
+      <div class="setup-section-title" id="st-step1">ΒΗΜΑ 1 — TELEGRAM BOT TOKEN</div>
       <div class="setup-card highlight" id="card-token">
         <input class="setup-input" id="s-token" type="text"
           placeholder="π.χ. 7412563890:AAFxxx..."
           autocomplete="off" autocorrect="off" spellcheck="false">
         <div class="setup-hint">
-          <strong>Πώς να το πάρεις:</strong><br>
-          <span class="docs-step">1. Άνοιξε Telegram → ψάξε <strong>@BotFather</strong></span>
-          <span class="docs-step">2. Στείλε <strong>/newbot</strong></span>
-          <span class="docs-step">3. Δώσε όνομα στο bot (π.χ. "Mama SOS")</span>
-          <span class="docs-step">4. Δώσε username που τελειώνει σε <strong>bot</strong></span>
-          <span class="docs-step">5. Αντέγραψε το token που σου στέλνει</span>
+          <strong id="st-step1how">Πώς να το πάρεις:</strong><br>
+          <span class="docs-step" id="st-step1a">1. Άνοιξε Telegram → ψάξε @BotFather</span>
+          <span class="docs-step" id="st-step1b">2. Στείλε /newbot</span>
+          <span class="docs-step" id="st-step1c">3. Δώσε όνομα στο bot (π.χ. "Mama SOS")</span>
+          <span class="docs-step" id="st-step1d">4. Δώσε username που τελειώνει σε bot</span>
+          <span class="docs-step" id="st-step1e">5. Αντέγραψε το token που σου στέλνει</span>
         </div>
       </div>
     </div>
 
     <!-- STEP 2: CHAT ID -->
     <div>
-      <div class="setup-section-title">ΒΗΜΑ 2 — TELEGRAM GROUP CHAT ID</div>
+      <div class="setup-section-title" id="st-step2">ΒΗΜΑ 2 — TELEGRAM GROUP CHAT ID</div>
       <div class="setup-card highlight" id="card-chatid">
         <input class="setup-input" id="s-chatid" type="text"
           placeholder="π.χ. -1001234567890"
           autocomplete="off" autocorrect="off" spellcheck="false">
         <div class="setup-hint">
-          <strong>Πώς να το πάρεις:</strong><br>
-          <span class="docs-step">1. Δημιούργησε group στο Telegram</span>
-          <span class="docs-step">2. Πρόσθεσε το bot σου ως Admin</span>
-          <span class="docs-step">3. Στείλε ένα μήνυμα στο group (π.χ. "test")</span>
-          <span class="docs-step">4. Άνοιξε browser και πήγαινε σε:</span>
-          <span class="docs-step" style="color:#444;font-size:11px;word-break:break-all">
-            https://api.telegram.org/bot<strong>TOKEN</strong>/getUpdates
-          </span>
-          <span class="docs-step">5. Βρες το <strong>"chat":{"id":</strong> — αρχίζει με <strong>-100...</strong></span>
+          <strong id="st-step2how">Πώς να το πάρεις:</strong><br>
+          <span class="docs-step" id="st-step2a">1. Δημιούργησε group στο Telegram</span>
+          <span class="docs-step" id="st-step2b">2. Πρόσθεσε το bot σου ως Admin</span>
+          <span class="docs-step" id="st-step2c">3. Στείλε ένα μήνυμα στο group (π.χ. "test")</span>
+          <span class="docs-step" id="st-step2d">4. Άνοιξε browser και πήγαινε σε:</span>
+          <span class="docs-step" style="color:#555;font-size:11px;word-break:break-all">https://api.telegram.org/bot<strong>TOKEN</strong>/getUpdates</span>
+          <span class="docs-step" id="st-step2e">5. Βρες το "chat":{"id": — αρχίζει με -100...</span>
         </div>
       </div>
     </div>
 
     <!-- STEP 3: MESSAGE -->
     <div>
-      <div class="setup-section-title">ΒΗΜΑ 3 — ΜΗΝΥΜΑ ΕΚΤΑΚΤΗΣ ΑΝΑΓΚΗΣ</div>
+      <div class="setup-section-title" id="st-step3">ΒΗΜΑ 3 — ΜΗΝΥΜΑ ΕΚΤΑΚΤΗΣ ΑΝΑΓΚΗΣ</div>
       <div class="setup-card">
         <textarea class="setup-textarea" id="s-message" rows="3"
           placeholder="π.χ. 🆘 ΕΚΤΑΚΤΗ ΑΝΑΓΚΗ! Χρειάζομαι βοήθεια αμέσως!"></textarea>
-        <div class="setup-hint">Αυτό θα σταλεί μαζί με την τοποθεσία GPS σου.</div>
+        <div class="setup-hint" id="st-step3hint">Αυτό θα σταλεί μαζί με την τοποθεσία GPS σου.</div>
       </div>
     </div>
 
     <!-- STEP 4: CALL NUMBER -->
     <div>
-      <div class="setup-section-title">ΒΗΜΑ 4 — ΑΡΙΘΜΟΣ ΓΡΗΓΟΡΗΣ ΚΛΗΣΗΣ</div>
+      <div class="setup-section-title" id="st-step4">ΒΗΜΑ 4 — ΑΡΙΘΜΟΣ ΓΡΗΓΟΡΗΣ ΚΛΗΣΗΣ</div>
       <div class="setup-card">
         <input class="setup-input" id="s-callnumber" type="tel"
           placeholder="π.χ. 6949924855 ή 100"
           autocomplete="off">
-        <div class="setup-hint">Εμφανίζεται ως κουμπί κλήσης μετά την αποστολή SOS.</div>
+        <div class="setup-hint" id="st-step4hint">Εμφανίζεται ως κουμπί κλήσης μετά την αποστολή SOS.</div>
       </div>
     </div>
 
     <!-- TEST + SAVE -->
-    <button class="btn-test" onclick="testConnection()">📡 ΔΟΚΙΜΗ ΣΥΝΔΕΣΗΣ</button>
-    <button class="btn-save" onclick="saveSettings()">✓ ΑΠΟΘΗΚΕΥΣΗ</button>
+    <button class="btn-test" id="btn-test" onclick="testConnection()">📡 ΔΟΚΙΜΗ ΣΥΝΔΕΣΗΣ</button>
+    <button class="btn-save" id="btn-save" onclick="saveSettings()">✓ ΑΠΟΘΗΚΕΥΣΗ</button>
     <div class="save-confirm" id="save-confirm"></div>
     <div class="save-confirm" id="test-result"></div>
 
@@ -509,14 +531,132 @@
 <script>
   // ══════════════════════════════════════════
   // SOS Panic Button — Open Source
-  // Config stored locally on device
+  // i18n: Greek + English
   // ══════════════════════════════════════════
+
+  const STRINGS = {
+    el: {
+      topLabel:         'ΚΟΥΜΠΙ ΕΚΤΑΚΤΗΣ ΑΝΑΓΚΗΣ',
+      pressHere:        'ΠΙΕΣΕ ΕΔΩ',
+      instructions:     'Πάτα το κουμπί αν',
+      instructionsB:    'χρειάζεσαι βοήθεια',
+      instructionsC:    'αμέσως',
+      notConfigured:    '⚠️ Δεν έχει ρυθμιστεί ακόμα!\nΠάτα εδώ για να ρυθμίσεις.',
+      countdownLabel:   'ΑΠΟΣΤΟΛΗ ΣΕ...',
+      cancelBtn:        '✕ ΑΚΥΡΩΣΗ',
+      sendingTitle:     'ΣΤΕΛΝΕΤΑΙ...',
+      sendingSub:       'Λαμβάνεται η θέση σου\nκαι αποστέλλεται μήνυμα',
+      successTitle:     'ΕΣΤΕΙΛΕΣ ΒΟΗΘΕΙΑ!',
+      successDetail:    'Η οικογένειά σου ειδοποιήθηκε\nμε την τοποθεσία σου.',
+      successStrong:    'Μείνε ήρεμη — βοήθεια έρχεται!',
+      callNow:          '📞 ΚΑΛΕΣΕ ΤΩΡΑ',
+      back:             '↩ ΕΠΙΣΤΡΟΦΗ',
+      errorTitle:       'ΔΕΝ ΕΣΤΕΙΛΕ!',
+      errorDetail:      'Πρόβλημα σύνδεσης.\nΔοκίμασε ξανά ή κάλεσε απευθείας.',
+      retry:            '🔄 ΞΑΝΑΔΟΚΙΜΑΣΕ',
+      callDirect:       '📞 ΚΑΛΕΣΕ ΑΠΕΥΘΕΙΑΣ',
+      settingsTitle:    '⚙️ ΡΥΘΜΙΣΕΙΣ',
+      step1Title:       'ΒΗΜΑ 1 — TELEGRAM BOT TOKEN',
+      step1How:         'Πώς να το πάρεις:',
+      step1a:           '1. Άνοιξε Telegram → ψάξε @BotFather',
+      step1b:           '2. Στείλε /newbot',
+      step1c:           '3. Δώσε όνομα στο bot (π.χ. "Mama SOS")',
+      step1d:           '4. Δώσε username που τελειώνει σε bot',
+      step1e:           '5. Αντέγραψε το token που σου στέλνει',
+      step1ph:          'π.χ. 7412563890:AAFxxx...',
+      step2Title:       'ΒΗΜΑ 2 — TELEGRAM GROUP CHAT ID',
+      step2How:         'Πώς να το πάρεις:',
+      step2a:           '1. Δημιούργησε group στο Telegram',
+      step2b:           '2. Πρόσθεσε το bot σου ως Admin',
+      step2c:           '3. Στείλε ένα μήνυμα στο group (π.χ. "test")',
+      step2d:           '4. Άνοιξε browser και πήγαινε σε:',
+      step2e:           '5. Βρες το "chat":{"id": — αρχίζει με -100...',
+      step2ph:          'π.χ. -1001234567890',
+      step3Title:       'ΒΗΜΑ 3 — ΜΗΝΥΜΑ ΕΚΤΑΚΤΗΣ ΑΝΑΓΚΗΣ',
+      step3ph:          'π.χ. 🆘 ΕΚΤΑΚΤΗ ΑΝΑΓΚΗ! Χρειάζομαι βοήθεια αμέσως!',
+      step3hint:        'Αυτό θα σταλεί μαζί με την τοποθεσία GPS σου.',
+      step4Title:       'ΒΗΜΑ 4 — ΑΡΙΘΜΟΣ ΓΡΗΓΟΡΗΣ ΚΛΗΣΗΣ',
+      step4ph:          'π.χ. 6949924855 ή 112',
+      step4hint:        'Εμφανίζεται ως κουμπί κλήσης μετά την αποστολή SOS.',
+      langTitle:        'ΓΛΩΣΣΑ / LANGUAGE',
+      testBtn:          '📡 ΔΟΚΙΜΗ ΣΥΝΔΕΣΗΣ',
+      saveBtn:          '✓ ΑΠΟΘΗΚΕΥΣΗ',
+      saved:            '✅ Αποθηκεύτηκε!',
+      testFill:         '⚠️ Συμπλήρωσε Token και Chat ID πρώτα',
+      testTrying:       '⏳ Δοκιμή...',
+      testOk:           '✅ Επιτυχία! Έλεγξε το Telegram group σου.',
+      testFail:         '❌ Σφάλμα: ',
+      testErr:          '❌ Σφάλμα σύνδεσης. Έλεγξε το internet.',
+      testWrongCreds:   'Λάθος token ή chat ID',
+      noGps:            '📍 Θέση άγνωστη (χωρίς GPS)',
+      testMsg:          '✅ Δοκιμαστικό μήνυμα SOS App — η σύνδεση λειτουργεί!',
+      defaultMsg:       '🆘 ΕΚΤΑΚΤΗ ΑΝΑΓΚΗ! Χρειάζομαι άμεση βοήθεια!',
+    },
+    en: {
+      topLabel:         'EMERGENCY PANIC BUTTON',
+      pressHere:        'PRESS HERE',
+      instructions:     'Press the button if you',
+      instructionsB:    'need help',
+      instructionsC:    'immediately',
+      notConfigured:    '⚠️ Not configured yet!\nTap here to set it up.',
+      countdownLabel:   'SENDING IN...',
+      cancelBtn:        '✕ CANCEL',
+      sendingTitle:     'SENDING...',
+      sendingSub:       'Getting your location\nand sending alert',
+      successTitle:     'HELP IS ON THE WAY!',
+      successDetail:    'Your family has been notified\nwith your location.',
+      successStrong:    'Stay calm — help is coming!',
+      callNow:          '📞 CALL NOW',
+      back:             '↩ BACK',
+      errorTitle:       'FAILED TO SEND!',
+      errorDetail:      'Connection problem.\nTry again or call directly.',
+      retry:            '🔄 TRY AGAIN',
+      callDirect:       '📞 CALL DIRECTLY',
+      settingsTitle:    '⚙️ SETTINGS',
+      step1Title:       'STEP 1 — TELEGRAM BOT TOKEN',
+      step1How:         'How to get it:',
+      step1a:           '1. Open Telegram → search @BotFather',
+      step1b:           '2. Send /newbot',
+      step1c:           '3. Give your bot a name (e.g. "Mama SOS")',
+      step1d:           '4. Give a username ending in bot',
+      step1e:           '5. Copy the token BotFather sends you',
+      step1ph:          'e.g. 7412563890:AAFxxx...',
+      step2Title:       'STEP 2 — TELEGRAM GROUP CHAT ID',
+      step2How:         'How to get it:',
+      step2a:           '1. Create a Telegram group',
+      step2b:           '2. Add your bot as Admin',
+      step2c:           '3. Send any message in the group (e.g. "test")',
+      step2d:           '4. Open a browser and go to:',
+      step2e:           '5. Find "chat":{"id": — starts with -100...',
+      step2ph:          'e.g. -1001234567890',
+      step3Title:       'STEP 3 — EMERGENCY MESSAGE',
+      step3ph:          'e.g. 🆘 EMERGENCY! I need help immediately!',
+      step3hint:        'This will be sent together with your GPS location.',
+      step4Title:       'STEP 4 — QUICK CALL NUMBER',
+      step4ph:          'e.g. +306949924855 or 112',
+      step4hint:        'Shows as a call button after the SOS is sent.',
+      langTitle:        'LANGUAGE / ΓΛΩΣΣΑ',
+      testBtn:          '📡 TEST CONNECTION',
+      saveBtn:          '✓ SAVE',
+      saved:            '✅ Saved!',
+      testFill:         '⚠️ Enter Token and Chat ID first',
+      testTrying:       '⏳ Testing...',
+      testOk:           '✅ Success! Check your Telegram group.',
+      testFail:         '❌ Error: ',
+      testErr:          '❌ Connection error. Check your internet.',
+      testWrongCreds:   'Wrong token or chat ID',
+      noGps:            '📍 Location unknown (no GPS)',
+      testMsg:          '✅ Test message from SOS App — connection works!',
+      defaultMsg:       '🆘 EMERGENCY! I need help immediately!',
+    }
+  };
 
   const DEFAULTS = {
     botToken:   '',
     chatId:     '',
-    message:    '🆘 ΕΚΤΑΚΤΗ ΑΝΑΓΚΗ! Χρειάζομαι άμεση βοήθεια!',
-    callNumber: '112'
+    message:    '',
+    callNumber: '112',
+    lang:       'el'
   };
 
   function loadConfig() {
@@ -525,6 +665,75 @@
       if (s) return Object.assign({}, DEFAULTS, JSON.parse(s));
     } catch(e) {}
     return Object.assign({}, DEFAULTS);
+  }
+
+  let cfg = loadConfig();
+  let lang = cfg.lang || 'el';
+  function t(key) { return (STRINGS[lang] || STRINGS.el)[key] || key; }
+
+  function applyLanguage() {
+    lang = cfg.lang || 'el';
+    // Main screen
+    document.querySelector('.top-label').textContent         = t('topLabel');
+    document.querySelector('.sub-text').textContent          = t('pressHere');
+    document.querySelector('.instructions').innerHTML        = t('instructions') + '<br><strong>' + t('instructionsB') + '</strong> ' + t('instructionsC');
+    // Countdown
+    document.querySelector('.countdown-label').textContent   = t('countdownLabel');
+    document.querySelector('.btn-cancel-countdown').textContent = t('cancelBtn');
+    // Sending
+    document.querySelector('.sending-title').textContent     = t('sendingTitle');
+    document.querySelector('.sending-sub').innerHTML         = t('sendingSub').replace('\n','<br>');
+    // Success
+    document.querySelector('.success-title').textContent     = t('successTitle');
+    document.getElementById('success-detail').innerHTML      = t('successDetail').replace('\n','<br>') + '<br><br><strong>' + t('successStrong') + '</strong>';
+    document.getElementById('btn-call-success').textContent  = t('callNow');
+    document.getElementById('btn-back-success').textContent  = t('back');
+    // Error
+    document.querySelector('.error-title').textContent       = t('errorTitle');
+    document.querySelector('.error-detail').innerHTML        = t('errorDetail').replace('\n','<br>');
+    document.getElementById('btn-retry').textContent         = t('retry');
+    document.getElementById('btn-call-error').textContent    = t('callDirect');
+    document.getElementById('btn-back-error').textContent    = t('back');
+    // Settings
+    document.querySelector('.setup-title').textContent       = t('settingsTitle');
+    document.getElementById('st-step1').textContent          = t('step1Title');
+    document.getElementById('st-step1how').textContent       = t('step1How');
+    document.getElementById('st-step1a').textContent         = t('step1a');
+    document.getElementById('st-step1b').textContent         = t('step1b');
+    document.getElementById('st-step1c').textContent         = t('step1c');
+    document.getElementById('st-step1d').textContent         = t('step1d');
+    document.getElementById('st-step1e').textContent         = t('step1e');
+    document.getElementById('s-token').placeholder           = t('step1ph');
+    document.getElementById('st-step2').textContent          = t('step2Title');
+    document.getElementById('st-step2how').textContent       = t('step2How');
+    document.getElementById('st-step2a').textContent         = t('step2a');
+    document.getElementById('st-step2b').textContent         = t('step2b');
+    document.getElementById('st-step2c').textContent         = t('step2c');
+    document.getElementById('st-step2d').textContent         = t('step2d');
+    document.getElementById('st-step2e').textContent         = t('step2e');
+    document.getElementById('s-chatid').placeholder          = t('step2ph');
+    document.getElementById('st-step3').textContent          = t('step3Title');
+    document.getElementById('s-message').placeholder         = t('step3ph');
+    document.getElementById('st-step3hint').textContent      = t('step3hint');
+    document.getElementById('st-step4').textContent          = t('step4Title');
+    document.getElementById('s-callnumber').placeholder      = t('step4ph');
+    document.getElementById('st-step4hint').textContent      = t('step4hint');
+    document.getElementById('st-lang').textContent           = t('langTitle');
+    document.getElementById('btn-test').textContent          = t('testBtn');
+    document.getElementById('btn-save').textContent          = t('saveBtn');
+    // Warning banner
+    const nc = document.getElementById('not-configured');
+    if (nc) nc.innerHTML = t('notConfigured').replace('\n','<br>');
+    // Lang toggle active state
+    document.getElementById('lang-el').classList.toggle('lang-active', lang === 'el');
+    document.getElementById('lang-en').classList.toggle('lang-active', lang === 'en');
+  }
+
+  function setLang(l) {
+    lang = l;
+    cfg.lang = l;
+    localStorage.setItem('sos_v3', JSON.stringify(cfg));
+    applyLanguage();
   }
 
   function isConfigured() {
@@ -537,25 +746,22 @@
     const gear = document.getElementById('settings-btn');
     if (!isConfigured()) {
       el.style.display = 'block';
-      gear.style.borderColor = '#ff6600';
+      gear.style.borderColor = 'rgba(255,100,0,0.6)';
       gear.textContent = '⚠️';
     } else {
       el.style.display = 'none';
-      gear.style.borderColor = '#1e1e1e';
+      gear.style.borderColor = 'rgba(255,255,255,0.1)';
       gear.textContent = '⚙️';
     }
   }
 
-  // ── Countdown logic ──
+  // ── Countdown ──
   let countdownTimer = null;
   let countdownValue = 5;
-  const CIRCUMFERENCE = 628; // 2 * PI * 100
+  const CIRCUMFERENCE = 628;
 
   function handleSOS() {
-    if (!isConfigured()) {
-      showScreen('setup-screen');
-      return;
-    }
+    if (!isConfigured()) { openSetup(); return; }
     startCountdown();
   }
 
@@ -566,23 +772,15 @@
     ring.style.strokeDashoffset = '0';
     ring.style.stroke = 'var(--red)';
     document.getElementById('countdown-overlay').classList.add('show');
-
     countdownTimer = setInterval(() => {
       countdownValue--;
-      const el = document.getElementById('countdown-number');
-      el.textContent = countdownValue;
-
-      // Update ring — shrinks as time passes
+      document.getElementById('countdown-number').textContent = countdownValue;
       const offset = CIRCUMFERENCE * (1 - countdownValue / 5);
       ring.style.strokeDashoffset = offset;
-
-      // Color shifts: red → orange → yellow as urgency builds
       if (countdownValue === 2) ring.style.stroke = '#FF6600';
       if (countdownValue === 1) ring.style.stroke = '#FFAA00';
-
       if (countdownValue <= 0) {
-        clearInterval(countdownTimer);
-        countdownTimer = null;
+        clearInterval(countdownTimer); countdownTimer = null;
         document.getElementById('countdown-overlay').classList.remove('show');
         startEmergency();
       }
@@ -590,10 +788,7 @@
   }
 
   function cancelCountdown() {
-    if (countdownTimer) {
-      clearInterval(countdownTimer);
-      countdownTimer = null;
-    }
+    if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
     document.getElementById('countdown-overlay').classList.remove('show');
   }
 
@@ -609,56 +804,37 @@
         ()    => { clearTimeout(geoTimeout); sendAlert(null); },
         { timeout: 7000, enableHighAccuracy: true }
       );
-    } else {
-      clearTimeout(geoTimeout);
-      sendAlert(null);
-    }
+    } else { clearTimeout(geoTimeout); sendAlert(null); }
   }
 
   async function sendAlert(position) {
     lastPosition = position;
     const c = loadConfig();
-    let locationText = '📍 Θέση άγνωστη (χωρίς GPS)';
-    if (position) {
-      const lat = position.coords.latitude.toFixed(6);
-      const lng = position.coords.longitude.toFixed(6);
-      locationText = '📍 https://maps.google.com/?q=' + lat + ',' + lng;
-    }
-    const now = new Date().toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit' });
-    const text = c.message + '\n\n' + locationText + '\n🕐 ' + now;
-
+    const locationText = position
+      ? '📍 https://maps.google.com/?q=' + position.coords.latitude.toFixed(6) + ',' + position.coords.longitude.toFixed(6)
+      : t('noGps');
+    const locale = lang === 'el' ? 'el-GR' : 'en-GB';
+    const now = new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+    const msg = (c.message || t('defaultMsg')) + '\n\n' + locationText + '\n🕐 ' + now;
     try {
       const res = await fetch('https://api.telegram.org/bot' + c.botToken + '/sendMessage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: c.chatId, text: text })
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: c.chatId, text: msg })
       });
       const data = await res.json();
       if (data.ok) {
-        const callNum = c.callNumber || '112';
-        document.getElementById('btn-call-success').href = 'tel:' + callNum;
-        document.getElementById('btn-call-error').href   = 'tel:' + callNum;
+        const num = c.callNumber || '112';
+        document.getElementById('btn-call-success').href = 'tel:' + num;
+        document.getElementById('btn-call-error').href   = 'tel:' + num;
         showScreen('success-screen');
-      } else {
-        showScreen('error-screen');
-      }
-    } catch(e) {
-      showScreen('error-screen');
-    }
+      } else { showScreen('error-screen'); }
+    } catch(e) { showScreen('error-screen'); }
   }
 
-  function retryEmergency() {
-    showScreen('sending-screen');
-    sendAlert(lastPosition);
-  }
+  function retryEmergency() { showScreen('sending-screen'); sendAlert(lastPosition); }
 
-  // ── Setup ──
+  // ── Screens ──
   function showScreen(id) {
-    if (id === 'setup-screen') {
-      openSetup();
-      return;
-    }
-    // Hide setup if open
     document.getElementById('setup-screen').classList.remove('active');
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -671,14 +847,15 @@
   }
 
   function openSetup() {
-    const c = loadConfig();
-    document.getElementById('s-token').value      = c.botToken    || '';
-    document.getElementById('s-chatid').value     = c.chatId      || '';
-    document.getElementById('s-message').value    = c.message     || DEFAULTS.message;
-    document.getElementById('s-callnumber').value = c.callNumber  || DEFAULTS.callNumber;
-    // Highlight unconfigured fields
-    document.getElementById('card-token').classList.toggle('highlight', !c.botToken);
-    document.getElementById('card-chatid').classList.toggle('highlight', !c.chatId);
+    cfg = loadConfig();
+    lang = cfg.lang || 'el';
+    document.getElementById('s-token').value      = cfg.botToken    || '';
+    document.getElementById('s-chatid').value     = cfg.chatId      || '';
+    document.getElementById('s-message').value    = cfg.message     || '';
+    document.getElementById('s-callnumber').value = cfg.callNumber  || DEFAULTS.callNumber;
+    document.getElementById('card-token').classList.toggle('highlight', !cfg.botToken);
+    document.getElementById('card-chatid').classList.toggle('highlight', !cfg.chatId);
+    applyLanguage();
     document.getElementById('setup-screen').classList.add('active');
   }
 
@@ -686,16 +863,19 @@
     const newCfg = {
       botToken:   document.getElementById('s-token').value.trim(),
       chatId:     document.getElementById('s-chatid').value.trim(),
-      message:    document.getElementById('s-message').value.trim()    || DEFAULTS.message,
-      callNumber: document.getElementById('s-callnumber').value.trim() || DEFAULTS.callNumber
+      message:    document.getElementById('s-message').value.trim(),
+      callNumber: document.getElementById('s-callnumber').value.trim() || DEFAULTS.callNumber,
+      lang:       lang
     };
+    cfg = newCfg;
     localStorage.setItem('sos_v3', JSON.stringify(newCfg));
     const conf = document.getElementById('save-confirm');
-    conf.textContent = '✅ Αποθηκεύτηκε!';
+    conf.textContent = t('saved');
     conf.classList.add('visible');
     setTimeout(() => conf.classList.remove('visible'), 2500);
     document.getElementById('card-token').classList.toggle('highlight', !newCfg.botToken);
     document.getElementById('card-chatid').classList.toggle('highlight', !newCfg.chatId);
+    applyLanguage();
   }
 
   async function testConnection() {
@@ -703,49 +883,35 @@
     const chatId = document.getElementById('s-chatid').value.trim();
     const el = document.getElementById('test-result');
     if (!token || !chatId) {
-      el.style.color = '#ff6600';
-      el.textContent = '⚠️ Συμπλήρωσε Token και Chat ID πρώτα';
+      el.style.color = '#ff6600'; el.textContent = t('testFill');
       el.classList.add('visible');
-      setTimeout(() => el.classList.remove('visible'), 3000);
-      return;
+      setTimeout(() => el.classList.remove('visible'), 3000); return;
     }
-    el.style.color = '#666';
-    el.textContent = '⏳ Δοκιμή...';
-    el.classList.add('visible');
+    el.style.color = '#888'; el.textContent = t('testTrying'); el.classList.add('visible');
     try {
       const res = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, text: '✅ Δοκιμαστικό μήνυμα SOS App — η σύνδεση λειτουργεί!' })
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text: t('testMsg') })
       });
       const data = await res.json();
       if (data.ok) {
-        el.style.color = 'var(--green)';
-        el.textContent = '✅ Επιτυχία! Έλεγξε το Telegram group σου.';
+        el.style.color = 'var(--green)'; el.textContent = t('testOk');
       } else {
-        el.style.color = '#ff4444';
-        el.textContent = '❌ Σφάλμα: ' + (data.description || 'Λάθος token ή chat ID');
+        el.style.color = '#ff4444'; el.textContent = t('testFail') + (data.description || t('testWrongCreds'));
       }
-    } catch(e) {
-      el.style.color = '#ff4444';
-      el.textContent = '❌ Σφάλμα σύνδεσης. Έλεγξε το internet.';
-    }
+    } catch(e) { el.style.color = '#ff4444'; el.textContent = t('testErr'); }
     setTimeout(() => el.classList.remove('visible'), 5000);
   }
 
-  function resetApp() {
-    checkConfigWarning();
-    showScreen('main-screen');
-  }
+  function resetApp() { checkConfigWarning(); showScreen('main-screen'); }
 
-  // Override gear to open setup properly
   document.getElementById('settings-btn').onclick = openSetup;
-
-  // Prevent accidental back navigation
   history.pushState(null, '', location.href);
   window.onpopstate = () => history.pushState(null, '', location.href);
 
   // Init
+  cfg = loadConfig(); lang = cfg.lang || 'el';
+  applyLanguage();
   checkConfigWarning();
 </script>
 </body>
