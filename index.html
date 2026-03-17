@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>SOS</title>
+<meta name="theme-color" content="#CC0000">
+<link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlNPUyIsCiAgInNob3J0X25hbWUiOiAiU09TIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwYTBhMGEiLAogICJ0aGVtZV9jb2xvciI6ICIjQ0MwMDAwIiwKICAib3JpZW50YXRpb24iOiAicG9ydHJhaXQiLAogICJpY29ucyI6IFt7ICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhacFpYZENiM2c5SWpBZ01DQTFNVElnTlRFeUlqNEtJQ0E4Y21WamRDQjNhV1IwYUQwaU5URXlJaUJvWldsbmFIUTlJalV4TWlJZ2NuZzlJamd3SWlCbWFXeHNQU0lqUTBNd01EQXdJaTgrQ2lBZ1BIUmxlSFFnZUQwaU1qVTJJaUI1UFNJek1UQWlJR1p2Ym5RdFptRnRhV3g1UFNKQmNtbGhiQ0JDYkdGamF5eHpZVzV6TFhObGNtbG1JaUJtYjI1MExYTnBlbVU5SWpFM01DSWdabTl1ZEMxM1pXbG5hSFE5SWprd01DSWdabWxzYkQwaWQyaHBkR1VpSUhSbGVIUXRZVzVqYUc5eVBTSnRhV1JrYkdVaUlHeGxkSFJsY2kxemNHRmphVzVuUFNJMElqNVRUMU04TDNSbGVIUStDand2YzNablBnPT0iLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiLCAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiIH1dCn0=">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjgwIiBmaWxsPSIjQ0MwMDAwIi8+CiAgPHRleHQgeD0iMjU2IiB5PSIzMTAiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE3MCIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGxldHRlci1zcGFjaW5nPSI0Ij5TT1M8L3RleHQ+Cjwvc3ZnPg==">
+<meta name="apple-mobile-web-app-title" content="SOS">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@400;700;900&display=swap');
+
+  :root {
+    --red: #FF0000;
+    --red-dark: #CC0000;
+    --bg: #0a0a0a;
+    --green: #00CC44;
+    --yellow: #FFD700;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    font-family: 'Roboto', sans-serif;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+
+  /* ── SCREENS ── */
+  .screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 32px 24px;
+    text-align: center;
+    gap: 20px;
+  }
+  .screen.active { display: flex; }
+
+  /* ── MAIN SCREEN ── */
+  #main-screen {
+    justify-content: space-between;
+    padding: 28px 20px 36px;
+  }
+
+  .top-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(16px, 4.5vw, 24px);
+    color: #666666;
+    letter-spacing: 4px;
+  }
+
+  .panic-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+  }
+
+  #panic-btn {
+    width: min(78vw, 310px);
+    height: min(78vw, 310px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ff4444, #CC0000 60%, #880000);
+    border: none;
+    cursor: pointer;
+    box-shadow:
+      0 0 0 8px #1a0000, 0 0 0 16px #330000,
+      0 0 60px 20px #ff000055, 0 0 120px 40px #ff000022,
+      inset 0 -8px 20px rgba(0,0,0,0.4), inset 0 8px 20px rgba(255,120,120,0.3);
+    animation: pulse-idle 2.5s ease-in-out infinite;
+    user-select: none; -webkit-user-select: none;
+    transition: transform 0.1s, box-shadow 0.1s;
+    position: relative;
+  }
+  #panic-btn:active {
+    transform: scale(0.94);
+    box-shadow: 0 0 0 8px #1a0000, 0 0 0 16px #330000, 0 0 40px 10px #ff000066, inset 0 4px 20px rgba(0,0,0,0.6);
+  }
+  #panic-btn .btn-inner {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; gap: 4px;
+  }
+  #panic-btn .sos-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(68px, 19vw, 100px);
+    color: white; letter-spacing: 6px;
+    text-shadow: 0 0 20px rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.8);
+    line-height: 1;
+  }
+  #panic-btn .sub-text {
+    font-size: clamp(12px, 3.2vw, 16px);
+    color: rgba(255,255,255,0.8); font-weight: 700;
+    letter-spacing: 2px;
+  }
+  @keyframes pulse-idle {
+    0%,100% { box-shadow: 0 0 0 8px #1a0000, 0 0 0 16px #330000, 0 0 60px 20px #ff000055, 0 0 120px 40px #ff000022, inset 0 -8px 20px rgba(0,0,0,0.4), inset 0 8px 20px rgba(255,120,120,0.3); }
+    50%      { box-shadow: 0 0 0 8px #1a0000, 0 0 0 16px #330000, 0 0 90px 30px #ff000077, 0 0 160px 60px #ff000033, inset 0 -8px 20px rgba(0,0,0,0.4), inset 0 8px 20px rgba(255,120,120,0.3); }
+  }
+
+  .instructions {
+    font-size: clamp(14px, 3.8vw, 18px);
+    color: #888; line-height: 1.6;
+  }
+  .instructions strong { color: #aaa; }
+
+  /* ── NOT CONFIGURED WARNING ── */
+  #not-configured {
+    display: none;
+    background: #1a0d00;
+    border: 2px solid #ff6600;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: clamp(12px, 3.2vw, 14px);
+    color: #ff8833;
+    font-weight: 700;
+    line-height: 1.5;
+    max-width: 300px;
+    cursor: pointer;
+  }
+
+  /* ── COUNTDOWN OVERLAY ── */
+  #countdown-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 32px;
+  }
+  #countdown-overlay.show { display: flex; }
+
+  .countdown-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(22px, 6vw, 32px);
+    color: #aaa;
+    letter-spacing: 6px;
+  }
+
+  .countdown-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(120px, 35vw, 180px);
+    color: var(--red);
+    line-height: 1;
+    text-shadow: 0 0 60px #ff000088;
+    transition: transform 0.1s;
+  }
+
+  /* SVG ring around countdown */
+  .countdown-ring-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .countdown-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 220px; height: 220px;
+  }
+  .ring-bg { fill: none; stroke: #1a1a1a; stroke-width: 10; }
+  .ring-progress {
+    fill: none; stroke: var(--red); stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 628;
+    stroke-dashoffset: 0;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 1s linear, stroke 0.3s;
+  }
+
+  .btn-cancel-countdown {
+    padding: 18px 48px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 16px;
+    color: #999;
+    font-size: clamp(16px, 4.5vw, 20px);
+    font-weight: 900;
+    cursor: pointer;
+    letter-spacing: 3px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-cancel-countdown:active { border-color: #999; color: #888; }
+
+  /* ── SENDING SCREEN ── */
+  .sending-icon { font-size: 72px; animation: spin-pulse 1s ease-in-out infinite alternate; }
+  @keyframes spin-pulse {
+    from { transform: scale(1); opacity: 0.8; }
+    to   { transform: scale(1.15); opacity: 1; }
+  }
+  .sending-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 9vw, 52px);
+    color: var(--yellow); letter-spacing: 4px;
+    animation: flash-text 0.8s ease-in-out infinite alternate;
+  }
+  @keyframes flash-text { from { opacity: 0.5; } to { opacity: 1; } }
+  .sending-sub { font-size: clamp(14px, 3.8vw, 18px); color: #999; font-weight: 700; line-height: 1.6; }
+
+  /* ── SUCCESS SCREEN ── */
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(30px, 8vw, 46px);
+    color: var(--green); letter-spacing: 4px;
+  }
+  .success-detail { font-size: clamp(14px, 3.8vw, 18px); color: #999; line-height: 1.7; }
+  .success-detail strong { color: #ddd; }
+
+  /* ── ERROR SCREEN ── */
+  .error-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 8vw, 44px);
+    color: var(--red); letter-spacing: 3px;
+  }
+  .error-detail { font-size: clamp(14px, 3.8vw, 17px); color: #999; line-height: 1.6; }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    width: 100%; padding: 20px;
+    border: none; border-radius: 16px;
+    color: white; font-size: clamp(17px, 4.8vw, 22px);
+    font-weight: 900; cursor: pointer; letter-spacing: 2px;
+    text-decoration: none; display: block; text-align: center;
+  }
+  .btn-green  { background: #00AA33; }
+  .btn-red    { background: var(--red-dark); }
+  .btn-grey   { background: #333; }
+  .btn-ghost  {
+    padding: 14px 32px; background: transparent;
+    border: 2px solid #222; border-radius: 14px;
+    color: #777; font-size: clamp(13px, 3.5vw, 16px);
+    font-weight: 700; cursor: pointer; letter-spacing: 2px;
+  }
+
+  /* ── SETUP SCREEN ── */
+  #setup-screen { justify-content: flex-start; padding: 0; gap: 0; overflow-y: auto; }
+
+  .setup-header {
+    background: #0d0d0d; border-bottom: 2px solid #1e1e1e;
+    padding: 20px 16px 16px; width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+    flex-shrink: 0;
+  }
+  .setup-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(20px, 5.5vw, 28px);
+    color: #999; letter-spacing: 3px;
+  }
+  .setup-close {
+    width: 40px; height: 40px; background: #1a1a1a;
+    border: 2px solid #2a2a2a; border-radius: 50%;
+    color: #999; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .setup-body { padding: 20px 16px 48px; display: flex; flex-direction: column; gap: 20px; width: 100%; }
+
+  .setup-section-title {
+    font-size: 11px; font-weight: 900; color: #777;
+    letter-spacing: 3px; text-transform: uppercase; margin-bottom: 2px;
+  }
+  .setup-card {
+    background: #0d0d0d; border: 2px solid #1a1a1a;
+    border-radius: 14px; padding: 16px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .setup-card.highlight { border-color: #ff6600; background: #110800; }
+
+  .setup-input {
+    width: 100%; background: #050505; border: 2px solid #222;
+    border-radius: 10px; padding: 13px 14px; color: white;
+    font-size: clamp(13px, 3.5vw, 16px); font-weight: 700;
+    font-family: 'Roboto', sans-serif; outline: none;
+    transition: border-color 0.2s;
+  }
+  .setup-input:focus { border-color: #666666; }
+  .setup-input::placeholder { color: #777; font-weight: 400; font-size: clamp(12px, 3.2vw, 14px); }
+
+  .setup-textarea {
+    width: 100%; background: #050505; border: 2px solid #222;
+    border-radius: 10px; padding: 13px 14px; color: white;
+    font-size: clamp(13px, 3.5vw, 15px); font-family: 'Roboto', sans-serif;
+    outline: none; resize: none; min-height: 75px; line-height: 1.5;
+    transition: border-color 0.2s;
+  }
+  .setup-textarea:focus { border-color: #666666; }
+
+  .setup-hint {
+    font-size: clamp(11px, 2.8vw, 13px); color: #777;
+    line-height: 1.5; font-weight: 400;
+  }
+  .setup-hint a { color: #999; }
+  .setup-hint strong { color: #888; }
+
+  .btn-save {
+    width: 100%; padding: 18px; background: #001a09;
+    border: 2px solid #006622; border-radius: 14px; color: #00CC44;
+    font-size: clamp(16px, 4.5vw, 20px); font-weight: 900;
+    cursor: pointer; letter-spacing: 3px;
+  }
+  .btn-test {
+    width: 100%; padding: 16px; background: #000d1a;
+    border: 2px solid #004488; border-radius: 14px; color: #0088ff;
+    font-size: clamp(14px, 4vw, 18px); font-weight: 900;
+    cursor: pointer; letter-spacing: 2px;
+  }
+
+  .save-confirm {
+    text-align: center; color: var(--green);
+    font-size: clamp(13px, 3.5vw, 15px); font-weight: 700;
+    opacity: 0; transition: opacity 0.3s; min-height: 20px;
+  }
+  .save-confirm.visible { opacity: 1; }
+
+  /* ── SETTINGS GEAR ── */
+  #settings-btn {
+    position: fixed; bottom: 20px; right: 20px;
+    width: 44px; height: 44px;
+    background: #111; border: 2px solid #1e1e1e;
+    border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    cursor: pointer; z-index: 50; font-size: 20px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .docs-box {
+    background: #060606; border: 1px solid #1a1a1a;
+    border-radius: 10px; padding: 14px;
+    font-size: clamp(11px, 2.8vw, 13px);
+    color: #777; line-height: 1.8;
+  }
+  .docs-box strong { color: #888; }
+  .docs-step { color: #999; margin-bottom: 4px; display: block; }
+</style>
+</head>
+<body>
+
+<!-- ══ GEAR BUTTON (always visible on main) ══ -->
+<button id="settings-btn" onclick="showScreen('setup-screen')">⚙️</button>
+
+<!-- ══ COUNTDOWN OVERLAY ══ -->
+<div id="countdown-overlay">
+  <div class="countdown-label">ΑΠΟΣΤΟΛΗ ΣΕ...</div>
+  <div class="countdown-ring-wrap">
+    <svg class="countdown-ring" viewBox="0 0 220 220">
+      <circle class="ring-bg" cx="110" cy="110" r="100"/>
+      <circle class="ring-progress" id="ring-progress" cx="110" cy="110" r="100"/>
+    </svg>
+    <div class="countdown-number" id="countdown-number">5</div>
+  </div>
+  <button class="btn-cancel-countdown" onclick="cancelCountdown()">✕ ΑΚΥΡΩΣΗ</button>
+</div>
+
+<!-- ══ MAIN SCREEN ══ -->
+<div id="main-screen" class="screen active">
+  <div class="top-label">ΚΟΥΜΠΙ ΕΚΤΑΚΤΗΣ ΑΝΑΓΚΗΣ</div>
+  <div class="panic-wrap">
+    <button id="panic-btn" onclick="handleSOS()">
+      <div class="btn-inner">
+        <span class="sos-text">SOS</span>
+        <span class="sub-text">ΠΙΕΣΕ ΕΔΩ</span>
+      </div>
+    </button>
+    <p class="instructions">Πάτα το κουμπί αν<br><strong>χρειάζεσαι βοήθεια</strong> αμέσως</p>
+  </div>
+  <div id="not-configured" onclick="showScreen('setup-screen')">
+    ⚠️ Δεν έχει ρυθμιστεί ακόμα!<br>Πάτα εδώ για να ρυθμίσεις.
+  </div>
+</div>
+
+<!-- ══ SENDING SCREEN ══ -->
+<div id="sending-screen" class="screen">
+  <div class="sending-icon">📡</div>
+  <div class="sending-title">ΣΤΕΛΝΕΤΑΙ...</div>
+  <div class="sending-sub">Λαμβάνεται η θέση σου<br>και αποστέλλεται μήνυμα</div>
+</div>
+
+<!-- ══ SUCCESS SCREEN ══ -->
+<div id="success-screen" class="screen">
+  <div style="font-size:72px">✅</div>
+  <div class="success-title">ΕΣΤΕΙΛΕΣ ΒΟΗΘΕΙΑ!</div>
+  <p class="success-detail">
+    Η οικογένειά σου ειδοποιήθηκε<br>με την τοποθεσία σου.<br><br>
+    <strong>Μείνε ήρεμη — βοήθεια έρχεται!</strong>
+  </p>
+  <a class="btn-primary btn-green" id="btn-call-success" href="tel:112">📞 ΚΑΛΕΣΕ ΤΩΡΑ</a>
+  <button class="btn-ghost" onclick="resetApp()">↩ ΕΠΙΣΤΡΟΦΗ</button>
+</div>
+
+<!-- ══ ERROR SCREEN ══ -->
+<div id="error-screen" class="screen">
+  <div style="font-size:64px">⚠️</div>
+  <div class="error-title">ΔΕΝ ΕΣΤΕΙΛΕ!</div>
+  <p class="error-detail">Πρόβλημα σύνδεσης.<br>Δοκίμασε ξανά ή κάλεσε απευθείας.</p>
+  <button class="btn-primary btn-red" onclick="retryEmergency()">🔄 ΞΑΝΑΔΟΚΙΜΑΣΕ</button>
+  <a class="btn-primary btn-grey" id="btn-call-error" href="tel:112" style="margin-top:-8px">📞 ΚΑΛΕΣΕ ΑΠΕΥΘΕΙΑΣ</a>
+  <button class="btn-ghost" onclick="resetApp()">↩ ΠΙΣΩ</button>
+</div>
+
+<!-- ══ SETUP SCREEN ══ -->
+<div id="setup-screen" class="screen">
+  <div class="setup-header">
+    <div class="setup-title">⚙️ ΡΥΘΜΙΣΕΙΣ</div>
+    <button class="setup-close" onclick="closeSetup()">✕</button>
+  </div>
+  <div class="setup-body">
+
+    <!-- STEP 1: BOT TOKEN -->
+    <div>
+      <div class="setup-section-title">Βήμα 1 — Telegram Bot Token</div>
+      <div class="setup-card highlight" id="card-token">
+        <input class="setup-input" id="s-token" type="text"
+          placeholder="π.χ. 7412563890:AAFxxx..."
+          autocomplete="off" autocorrect="off" spellcheck="false">
+        <div class="setup-hint">
+          <strong>Πώς να το πάρεις:</strong><br>
+          <span class="docs-step">1. Άνοιξε Telegram → ψάξε <strong>@BotFather</strong></span>
+          <span class="docs-step">2. Στείλε <strong>/newbot</strong></span>
+          <span class="docs-step">3. Δώσε όνομα στο bot (π.χ. "Mama SOS")</span>
+          <span class="docs-step">4. Δώσε username που τελειώνει σε <strong>bot</strong></span>
+          <span class="docs-step">5. Αντέγραψε το token που σου στέλνει</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: CHAT ID -->
+    <div>
+      <div class="setup-section-title">Βήμα 2 — Telegram Group Chat ID</div>
+      <div class="setup-card highlight" id="card-chatid">
+        <input class="setup-input" id="s-chatid" type="text"
+          placeholder="π.χ. -1001234567890"
+          autocomplete="off" autocorrect="off" spellcheck="false">
+        <div class="setup-hint">
+          <strong>Πώς να το πάρεις:</strong><br>
+          <span class="docs-step">1. Δημιούργησε group στο Telegram</span>
+          <span class="docs-step">2. Πρόσθεσε το bot σου ως Admin</span>
+          <span class="docs-step">3. Στείλε ένα μήνυμα στο group (π.χ. "test")</span>
+          <span class="docs-step">4. Άνοιξε browser και πήγαινε σε:</span>
+          <span class="docs-step" style="color:#444;font-size:11px;word-break:break-all">
+            https://api.telegram.org/bot<strong>TOKEN</strong>/getUpdates
+          </span>
+          <span class="docs-step">5. Βρες το <strong>"chat":{"id":</strong> — αρχίζει με <strong>-100...</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: MESSAGE -->
+    <div>
+      <div class="setup-section-title">Βήμα 3 — Μήνυμα έκτακτης ανάγκης</div>
+      <div class="setup-card">
+        <textarea class="setup-textarea" id="s-message" rows="3"
+          placeholder="π.χ. 🆘 ΕΚΤΑΚΤΗ ΑΝΑΓΚΗ! Χρειάζομαι βοήθεια αμέσως!"></textarea>
+        <div class="setup-hint">Αυτό θα σταλεί μαζί με την τοποθεσία GPS σου.</div>
+      </div>
+    </div>
+
+    <!-- STEP 4: CALL NUMBER -->
+    <div>
+      <div class="setup-section-title">Βήμα 4 — Αριθμός γρήγορης κλήσης</div>
+      <div class="setup-card">
+        <input class="setup-input" id="s-callnumber" type="tel"
+          placeholder="π.χ. 6949924855 ή 100"
+          autocomplete="off">
+        <div class="setup-hint">Εμφανίζεται ως κουμπί κλήσης μετά την αποστολή SOS.</div>
+      </div>
+    </div>
+
+    <!-- TEST BUTTON -->
+    <button class="btn-test" onclick="testConnection()">📡 ΔΟΚΙΜΗ ΣΥΝΔΕΣΗΣ</button>
+    <div class="save-confirm" id="test-result"></div>
+
+    <!-- SAVE -->
+    <button class="btn-save" onclick="saveSettings()">✓ ΑΠΟΘΗΚΕΥΣΗ</button>
+    <div class="save-confirm" id="save-confirm"></div>
+
+  </div>
+</div>
+
+<script>
+  // ══════════════════════════════════════════
+  // SOS Panic Button — Open Source
+  // Config stored locally on device
+  // ══════════════════════════════════════════
+
+  const DEFAULTS = {
+    botToken:   '',
+    chatId:     '',
+    message:    '🆘 ΕΚΤΑΚΤΗ ΑΝΑΓΚΗ! Χρειάζομαι άμεση βοήθεια!',
+    callNumber: '112'
+  };
+
+  function loadConfig() {
+    try {
+      const s = localStorage.getItem('sos_v3');
+      if (s) return Object.assign({}, DEFAULTS, JSON.parse(s));
+    } catch(e) {}
+    return Object.assign({}, DEFAULTS);
+  }
+
+  function isConfigured() {
+    const c = loadConfig();
+    return c.botToken.trim().length > 10 && c.chatId.trim().length > 3;
+  }
+
+  function checkConfigWarning() {
+    const el = document.getElementById('not-configured');
+    const gear = document.getElementById('settings-btn');
+    if (!isConfigured()) {
+      el.style.display = 'block';
+      gear.style.borderColor = '#ff6600';
+      gear.textContent = '⚠️';
+    } else {
+      el.style.display = 'none';
+      gear.style.borderColor = '#1e1e1e';
+      gear.textContent = '⚙️';
+    }
+  }
+
+  // ── Countdown logic ──
+  let countdownTimer = null;
+  let countdownValue = 5;
+  const CIRCUMFERENCE = 628; // 2 * PI * 100
+
+  function handleSOS() {
+    if (!isConfigured()) {
+      showScreen('setup-screen');
+      return;
+    }
+    startCountdown();
+  }
+
+  function startCountdown() {
+    countdownValue = 5;
+    document.getElementById('countdown-number').textContent = countdownValue;
+    const ring = document.getElementById('ring-progress');
+    ring.style.strokeDashoffset = '0';
+    ring.style.stroke = 'var(--red)';
+    document.getElementById('countdown-overlay').classList.add('show');
+
+    countdownTimer = setInterval(() => {
+      countdownValue--;
+      const el = document.getElementById('countdown-number');
+      el.textContent = countdownValue;
+
+      // Update ring — shrinks as time passes
+      const offset = CIRCUMFERENCE * (1 - countdownValue / 5);
+      ring.style.strokeDashoffset = offset;
+
+      // Color shifts: red → orange → yellow as urgency builds
+      if (countdownValue === 2) ring.style.stroke = '#FF6600';
+      if (countdownValue === 1) ring.style.stroke = '#FFAA00';
+
+      if (countdownValue <= 0) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+        document.getElementById('countdown-overlay').classList.remove('show');
+        startEmergency();
+      }
+    }, 1000);
+  }
+
+  function cancelCountdown() {
+    if (countdownTimer) {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
+    document.getElementById('countdown-overlay').classList.remove('show');
+  }
+
+  // ── Emergency ──
+  let lastPosition = null;
+
+  function startEmergency() {
+    showScreen('sending-screen');
+    const geoTimeout = setTimeout(() => sendAlert(null), 8000);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => { clearTimeout(geoTimeout); sendAlert(pos); },
+        ()    => { clearTimeout(geoTimeout); sendAlert(null); },
+        { timeout: 7000, enableHighAccuracy: true }
+      );
+    } else {
+      clearTimeout(geoTimeout);
+      sendAlert(null);
+    }
+  }
+
+  async function sendAlert(position) {
+    lastPosition = position;
+    const c = loadConfig();
+    let locationText = '📍 Θέση άγνωστη (χωρίς GPS)';
+    if (position) {
+      const lat = position.coords.latitude.toFixed(6);
+      const lng = position.coords.longitude.toFixed(6);
+      locationText = '📍 https://maps.google.com/?q=' + lat + ',' + lng;
+    }
+    const now = new Date().toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit' });
+    const text = c.message + '\n\n' + locationText + '\n🕐 ' + now;
+
+    try {
+      const res = await fetch('https://api.telegram.org/bot' + c.botToken + '/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: c.chatId, text: text })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        const callNum = c.callNumber || '112';
+        document.getElementById('btn-call-success').href = 'tel:' + callNum;
+        document.getElementById('btn-call-error').href   = 'tel:' + callNum;
+        showScreen('success-screen');
+      } else {
+        showScreen('error-screen');
+      }
+    } catch(e) {
+      showScreen('error-screen');
+    }
+  }
+
+  function retryEmergency() {
+    showScreen('sending-screen');
+    sendAlert(lastPosition);
+  }
+
+  // ── Setup ──
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    // Show/hide gear button
+    document.getElementById('settings-btn').style.display = id === 'main-screen' ? 'flex' : 'none';
+  }
+
+  function closeSetup() {
+    checkConfigWarning();
+    showScreen('main-screen');
+  }
+
+  function openSetup() {
+    const c = loadConfig();
+    document.getElementById('s-token').value      = c.botToken    || '';
+    document.getElementById('s-chatid').value     = c.chatId      || '';
+    document.getElementById('s-message').value    = c.message     || DEFAULTS.message;
+    document.getElementById('s-callnumber').value = c.callNumber  || DEFAULTS.callNumber;
+    // Highlight unconfigured fields
+    document.getElementById('card-token').classList.toggle('highlight', !c.botToken);
+    document.getElementById('card-chatid').classList.toggle('highlight', !c.chatId);
+    showScreen('setup-screen');
+  }
+
+  function saveSettings() {
+    const newCfg = {
+      botToken:   document.getElementById('s-token').value.trim(),
+      chatId:     document.getElementById('s-chatid').value.trim(),
+      message:    document.getElementById('s-message').value.trim()    || DEFAULTS.message,
+      callNumber: document.getElementById('s-callnumber').value.trim() || DEFAULTS.callNumber
+    };
+    localStorage.setItem('sos_v3', JSON.stringify(newCfg));
+    const conf = document.getElementById('save-confirm');
+    conf.textContent = '✅ Αποθηκεύτηκε!';
+    conf.classList.add('visible');
+    setTimeout(() => conf.classList.remove('visible'), 2500);
+    document.getElementById('card-token').classList.toggle('highlight', !newCfg.botToken);
+    document.getElementById('card-chatid').classList.toggle('highlight', !newCfg.chatId);
+  }
+
+  async function testConnection() {
+    const token  = document.getElementById('s-token').value.trim();
+    const chatId = document.getElementById('s-chatid').value.trim();
+    const el = document.getElementById('test-result');
+    if (!token || !chatId) {
+      el.style.color = '#ff6600';
+      el.textContent = '⚠️ Συμπλήρωσε Token και Chat ID πρώτα';
+      el.classList.add('visible');
+      setTimeout(() => el.classList.remove('visible'), 3000);
+      return;
+    }
+    el.style.color = '#666';
+    el.textContent = '⏳ Δοκιμή...';
+    el.classList.add('visible');
+    try {
+      const res = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text: '✅ Δοκιμαστικό μήνυμα SOS App — η σύνδεση λειτουργεί!' })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        el.style.color = 'var(--green)';
+        el.textContent = '✅ Επιτυχία! Έλεγξε το Telegram group σου.';
+      } else {
+        el.style.color = '#ff4444';
+        el.textContent = '❌ Σφάλμα: ' + (data.description || 'Λάθος token ή chat ID');
+      }
+    } catch(e) {
+      el.style.color = '#ff4444';
+      el.textContent = '❌ Σφάλμα σύνδεσης. Έλεγξε το internet.';
+    }
+    setTimeout(() => el.classList.remove('visible'), 5000);
+  }
+
+  function resetApp() {
+    checkConfigWarning();
+    showScreen('main-screen');
+  }
+
+  // Override gear to open setup properly
+  document.getElementById('settings-btn').onclick = openSetup;
+
+  // Prevent accidental back navigation
+  history.pushState(null, '', location.href);
+  window.onpopstate = () => history.pushState(null, '', location.href);
+
+  // Init
+  checkConfigWarning();
+</script>
+</body>
+</html>
