@@ -210,4 +210,4 @@ MIT — free to use, modify, and distribute. If you build something useful on to
 
 ---
 
-*Built with Claude by [Theo Vasdekis](https://github.com/tvasdek) — because our people deserve to feel safe.*
+*Built with Claude Code by [Theo Vasdekis](https://github.com/tvasdek) — because our people deserve to feel safe.*
